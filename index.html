@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cinetime</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+title{
+  color: azure;
+}
+  body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #fcfdfe, #f9f9f9);
+    color: #0e0101;
+    /* Removed flex and min-height from body for natural flow */
+  }
+
+  header {
+    background: #f5f6f8;
+    padding: 20px 40px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+  }
+span{
+  color: #080000;
+  
+  padding: 2px 4px;
+  background-color: #fa0202;
+}
+  header h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.4rem;
+    color: #090901;
+    font-family: 'Bahnschrift Condensed', sans-serif;
+    letter-spacing: 2px;
+    text-align: left;
+  }
+
+  main {
+    padding: 30px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .view-section {
+    display: none;
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  .view-section.active {
+    display: block;
+  }
+  
+
+  /* Movies List */
+  #movies-list {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+  }
+
+  .movie-card {
+    background: #fdfefe;
+    border-radius: 10px;
+    padding: 15px 15px 25px 15px;
+    box-shadow: 0 8px 20px rgba(87, 110, 145, 0.7);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-color: #00050c;
+  }
+
+  .movie-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px #f7b733cc;
+  }
+
+  .movie-poster {
+    width: 180px;
+    height: 270px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(12, 11, 9, 0.8);
+    margin-bottom: 15px;
+    background-color: #1a2f4b;
+  }
+
+  .movie-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f7b733;
+    margin-bottom: 5px;
+    text-align: center;
+  }
+
+  .movie-info {
+    font-size: 0.9rem;
+    color: #010712;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  /* Shows List */
+  #shows-list {
+    margin-top: 20px;
+    background: #fbfbfb;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 8px 20px rgba(16, 11, 0, 0.7);
+  }
+
+  #shows-list h3 {
+    margin-top: 0;
+    color: #0f0c05;
+  }
+
+  .show-option {
+    background: #f90303;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 8px;
+    color: #d1d9e6;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .show-option:hover,
+  .show-option.selected {
+    background: #f9f9f8;
+    color: #0b2346;
+  }
+
+  /* Screen container */
+  #screen-container {
+    margin: 15px auto 10px auto;
+    max-width: 620px;
+    height: 30px;
+    background: linear-gradient(90deg, #f9f9f8, #f5f4f3);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 0 18px #0a0701;
+    text-align: center;
+    font-weight: 700;
+    color: #0b2346;
+    line-height: 30px;
+    font-size: 1.1rem;
+    font-family: 'Montserrat', sans-serif;
+    user-select: none;
+  }
+
+  /* Seat Selection */
+  #seats-container {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  #seats-container h4 {
+    margin-bottom: 10px;
+    color: #0b0802;
+  }
+
+  .seats-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 30px);
+    justify-content: center;
+    gap: 8px 8px;
+  }
+
+  .seat {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background-color: #2c4a7c;
+    cursor: pointer;
+    box-shadow: inset 0 0 4px #14335c;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: #d1d9e6;
+    user-select: none;
+    font-size: 0.85rem;
+  }
+
+  .seat.available:hover {
+    background-color: #f7b733;
+    color: #0b2346;
+    box-shadow: 0 0 12px #f7b733;
+  }
+
+  .seat.booked {
+    background-color: #8a9db2;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #4a5b73;
+  }
+
+  .seat.selected {
+    background-color: #fbb034;
+    color: #0b2346;
+    box-shadow: 0 0 12px #fbb034;
+  }
+
+  /* Booking Form */
+  form {
+    margin-top: 25px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #f8f8f9;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(4, 3, 0, 0.7);
+  }
+
+  form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #020101;
+  }
+
+  form input[type="text"] {
+    width: 100%;
+    padding: 8px 11px;
+    font-size: 1rem;
+    border-radius: 7px;
+    border: 2px solid #2c4a7c;
+    background: #ffffff;
+    color: #06080c;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  form input[type="text"]:focus {
+    border-color: #0a0701;
+  }
+
+  .btn {
+    cursor: pointer;
+    background: #f80101;
+    border: none;
+    color: #f5f6f7;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    display: block;
+    width: 100%;
+    box-shadow: 0 0 18px #060606;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .btn:hover {
+    background: #fbb034;
+  }
+
+  /* Booking Summary */
+  #booking-summary {
+    margin-top: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: 0 8px 20px rgba(6, 4, 0, 0.7);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #booking-summary h3 {
+    color: #020201;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  #booking-summary p {
+    font-size: 1.05rem;
+    margin: 8px 0;
+    color: #d1d9e6;
+  }
+
+  /* Navigation */
+  nav {
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 15px 5px;
+    box-shadow: 0 -4px 10px rgb(255, 255, 254);
+  }
+
+  nav button {
+    margin: 0 12px;
+    background: #f90000;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #050300;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    min-width: 110px;
+    
+  }
+
+  nav button.active,
+  nav button:hover {
+    background: #ff0202;
+    color: #0b2346;
+    box-shadow: 0 0 20px #0f0a01;
+  }
+
+ 
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    .movie-card {
+      padding: 15px;
+    }
+
+    .seats-grid {
+      grid-template-columns: repeat(10, 30px);
+      gap: 6px 6px;
+    }
+
+    nav button {
+      min-width: 90px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
+    #screen-container {
+      max-width: 320px;
+      font-size: 1rem;
+      height: 24px;
+      line-height: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cine<span>Time</span></h1>
+</header>
+<main>
+    <nav role="navigation" aria-label="Main menu">
+  <button id="btn-movies" class="active" aria-current="page">Movies</button>
+  <button id="btn-book" >Book Tickets</button>
+  <button id="btn-bookings">View Bookings</button>
+</nav>
+  <!-- Movies View -->
+  <section id="movies-view" class="view-section active" aria-label="Available Movies">
+    <h2>Available Movies</h2>
+    <div id="movies-list" role="list" aria-live="polite">
+      <!-- Movies cards inserted here dynamically -->
+    </div>
+  </section>
+
+  <!-- Shows and booking View -->
+  <section id="booking-view" class="view-section" aria-label="Booking Tickets">
+    <h2 id="booking-movie-title">Book Tickets</h2>
+    <div id="shows-list" aria-live="polite" aria-relevant="additions">
+      <!-- Shows per selected movie inserted here -->
+    </div>
+
+    <div id="screen-container" aria-label="Screen">SCREEN</div>
+
+    <div id="seats-container" aria-label="Select your seats" hidden>
+      <h4>Select Seats:</h4>
+      <div class="seats-grid" role="grid" aria-multiselectable="true" tabindex="0">
+        <!-- Seats inserted dynamically here -->
+      </div>
+    </div>
+
+    <form id="booking-form" aria-label="Booking form" hidden>
+      <label for="customer-name">Your Name</label>
+      <input type="text" id="customer-name" name="customer-name" autocomplete="name" required minlength="2" />
+      <button type="submit" class="btn">Confirm Booking</button>
+    </form>
+  </section>
+
+  <!-- Bookings View -->
+  <section id="bookings-view" class="view-section" aria-label="View Bookings">
+    <h2>Your Bookings</h2>
+    <div id="booking-summary-list" aria-live="polite">
+      <!-- Booking summaries inserted here -->
+    </div>
+  </section>
+
+  
+</main>
+
+
+
+<script>
+(function() {
+  class Movie {
+    constructor(id, name, genre, duration, rating, poster) {
+      this.id = id;
+      this.name = name;
+      this.genre = genre;
+      this.duration = duration;
+      this.rating = rating;
+      this.poster = poster;
+    }
+  }
+
+  class Show {
+    constructor(id, movie, time, totalSeats = 100) {
+      this.id = id;
+      this.movie = movie;
+      this.time = time;
+      this.totalSeats = totalSeats;
+      this.seats = new Array(totalSeats).fill(false);
+    }
+
+    isSeatAvailable(seatNum) {
+      return seatNum >= 1 && seatNum <= this.totalSeats && !this.seats[seatNum - 1];
+    }
+
+    bookSeat(seatNum) {
+      if (this.isSeatAvailable(seatNum)) {
+        this.seats[seatNum - 1] = true;
+        return true;
+      }
+      return false;
+    }
+  }
+
+  class Booking {
+    constructor(id, show, seats, customerName) {
+      this.id = id;
+      this.show = show;
+      this.seats = seats;
+      this.customerName = customerName;
+    }
+  }
+
+  class BookingSystem {
+    constructor() {
+      this.movies = [];
+      this.shows = [];
+      this.bookings = [];
+      this.bookingCounter = 0;
+      this.currentMovie = null;
+      this.currentShow = null;
+      this.selectedSeats = [];
+      this.init();
+    }
+
+    init() {
+      this.initializeMovies();
+      this.initializeShows();
+      ui.init(this);
+    }
+
+    initializeMovies() {
+      this.movies.push(new Movie(1, "Mission: Impossible – The Final Reckoning", " Action/Thriller", "2h 49m",4.1, "mi.jpeg"));
+      this.movies.push(new Movie(2, "Final Destination Bloodlines", " Horror/Mystery", "1h 48m", 4.3,"fd.jpg"));
+      this.movies.push(new Movie(3, "Raid 2 ", "Thriller", "2h 30m",4.0, "red.jpg"));
+    }
+
+    initializeShows() {
+      this.shows.push(new Show(1, this.movies[0], "12:00 PM", 100));
+      this.shows.push(new Show(2, this.movies[0], "3:00 PM", 100));
+      this.shows.push(new Show(2, this.movies[0], "6:00 PM", 100));
+      this.shows.push(new Show(3, this.movies[1], "12:00 PM", 100));
+      this.shows.push(new Show(3, this.movies[1], "1:00 PM", 100));
+      this.shows.push(new Show(3, this.movies[1], "4:00 PM", 100));
+      this.shows.push(new Show(4, this.movies[2], "4:00 PM", 100));
+      this.shows.push(new Show(4, this.movies[2], "6:00 PM", 100));
+      this.shows.push(new Show(4, this.movies[2], "8:00 PM", 100));
+      
+    }
+
+    getShowsForMovie(movieId) {
+      return this.shows.filter(show => show.movie.id === movieId);
+    }
+
+    getShowById(showId) {
+      return this.shows.find(show => show.id === showId);
+    }
+
+    addBooking(customerName) {
+      if (!this.currentShow || this.selectedSeats.length === 0) return false;
+      this.bookingCounter++;
+      this.selectedSeats.forEach(seat => {
+        this.currentShow.bookSeat(seat);
+      });
+      const booking = new Booking(this.bookingCounter, this.currentShow, [...this.selectedSeats], customerName);
+      this.bookings.push(booking);
+
+      this.selectedSeats = [];
+      this.currentShow = null;
+      this.currentMovie = null;
+
+      return booking;
+    }
+  }
+
+  const ui = {
+    init(system) {
+      this.system = system;
+
+      this.moviesView = document.getElementById('movies-view');
+      this.moviesList = document.getElementById('movies-list');
+
+      this.bookingView = document.getElementById('booking-view');
+      this.bookingMovieTitle = document.getElementById('booking-movie-title');
+      this.showsList = document.getElementById('shows-list');
+
+      this.seatsContainer = document.getElementById('seats-container');
+      this.seatsGrid = this.seatsContainer.querySelector('.seats-grid');
+
+      this.bookingForm = document.getElementById('booking-form');
+      this.customerNameInput = this.bookingForm.querySelector('#customer-name');
+
+      this.bookingsView = document.getElementById('bookings-view');
+      this.bookingSummaryList = document.getElementById('booking-summary-list');
+
+      this.navButtons = {
+        movies: document.getElementById('btn-movies'),
+        book: document.getElementById('btn-book'),
+        bookings: document.getElementById('btn-bookings')
+      };
+
+      this.navButtons.movies.addEventListener('click', () => this.showView('movies'));
+      this.navButtons.book.addEventListener('click', () => this.showView('booking'));
+      this.navButtons.bookings.addEventListener('click', () => this.showView('bookings'));
+
+      this.renderMovies();
+
+      this.showsList.addEventListener('click', e => this.onShowClick(e));
+      this.seatsGrid.addEventListener('click', e => this.onSeatClick(e));
+      this.bookingForm.addEventListener('submit', e => this.onBookingSubmit(e));
+    },
+
+    showView(viewName) {
+      Object.keys(this.navButtons).forEach(key => {
+        this.navButtons[key].classList.remove('active');
+        this.navButtons[key].removeAttribute('aria-current');
+      });
+      if (viewName === 'movies') {
+        this.navButtons.movies.classList.add('active');
+        this.navButtons.movies.setAttribute('aria-current', 'page');
+        this.moviesView.classList.add('active');
+        this.bookingView.classList.remove('active');
+        this.bookingsView.classList.remove('active');
+      } else if (viewName === 'booking') {
+        if (!this.system.currentMovie) {
+          alert("Please select a movie first from Available Movies to book tickets.");
+          this.showView('movies');
+          return;
+        }
+        this.navButtons.book.classList.add('active');
+        this.navButtons.book.setAttribute('aria-current', 'page');
+        this.moviesView.classList.remove('active');
+        this.bookingView.classList.add('active');
+        this.bookingsView.classList.remove('active');
+        this.renderBookingView();
+      } else if (viewName === 'bookings') {
+        this.navButtons.bookings.classList.add('active');
+        this.navButtons.bookings.setAttribute('aria-current', 'page');
+        this.moviesView.classList.remove('active');
+        this.bookingView.classList.remove('active');
+        this.bookingsView.classList.add('active');
+        this.renderBookingsView();
+      }
+    },
+
+    renderMovies() {
+      this.moviesList.innerHTML = '';
+      this.system.movies.forEach(movie => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('aria-label', `Movie: ${movie.name}, genre: ${movie.genre}, duration ${movie.duration} minutes`);
+
+        card.innerHTML = `
+          <img src="${movie.poster}" alt="Poster of ${movie.name}" class="movie-poster" loading="lazy" />
+          <div class="movie-title">${movie.name}</div>
+          <div class="movie-info">Genre: ${movie.genre}</div>
+          <div class="movie-info">Duration: ${movie.duration} </div>
+          <div class="movie-info">rating: ${movie.rating} </div>
+          <button class="btn select-movie-btn" aria-label="Select movie ${movie.name} to book tickets">Select</button>
+        `;
+
+        card.querySelector('.select-movie-btn').addEventListener('click', () => {
+          this.system.currentMovie = movie;
+          this.system.currentShow = null;
+          this.system.selectedSeats = [];
+          this.showView('booking');
+        });
+        this.moviesList.appendChild(card);
+      });
+    },
+
+    renderBookingView() {
+      this.bookingMovieTitle.textContent = `Book Tickets for: ${this.system.currentMovie.name}`;
+      const shows = this.system.getShowsForMovie(this.system.currentMovie.id);
+      this.showsList.innerHTML = '<h3>Select a Show Time:</h3>';
+      shows.forEach(show => {
+        const div = document.createElement('div');
+        div.className = 'show-option';
+        div.tabIndex = 0;
+        div.setAttribute('role', 'button');
+        div.setAttribute('aria-pressed', 'false');
+        div.textContent = `${show.time} (${show.seats.filter(s => s).length} / ${show.totalSeats} seats booked)`;
+        div.dataset.showId = show.id;
+
+        if (this.system.currentShow && this.system.currentShow.id === show.id) {
+          div.classList.add('selected');
+          div.setAttribute('aria-pressed', 'true');
+        }
+
+        this.showsList.appendChild(div);
+      });
+
+      if (!this.system.currentShow) {
+        this.clearSeatSelection();
+        this.seatsContainer.hidden = true;
+        this.bookingForm.hidden = true;
+      } else {
+        this.renderSeats();
+        this.seatsContainer.hidden = false;
+        this.bookingForm.hidden = false;
+        this.customerNameInput.value = '';
+        this.customerNameInput.focus();
+      }
+    },
+
+    onShowClick(event) {
+      const showDiv = event.target.closest('.show-option');
+      if (!showDiv) return;
+      const showId = parseInt(showDiv.dataset.showId);
+      const show = this.system.getShowById(showId);
+      if (!show) return;
+      this.system.currentShow = show;
+      this.system.selectedSeats = [];
+      this.renderBookingView();
+    },
+
+    renderSeats() {
+      this.seatsGrid.innerHTML = '';
+      for (let i = 1; i <= this.system.currentShow.totalSeats; i++) {
+        const seat = document.createElement('div');
+        seat.className = 'seat';
+        seat.textContent = i;
+        seat.tabIndex = 0;
+
+        if (this.system.currentShow.seats[i - 1]) {
+          seat.classList.add('booked');
+          seat.setAttribute('aria-label', `Seat ${i} - Booked`);
+          seat.setAttribute('aria-disabled', 'true');
+        } else {
+          seat.classList.add('available');
+          seat.setAttribute('aria-label', `Seat ${i} - Available`);
+          seat.setAttribute('aria-pressed', this.system.selectedSeats.includes(i).toString());
+        }
+
+        if (this.system.selectedSeats.includes(i)) {
+          seat.classList.add('selected');
+          seat.setAttribute('aria-pressed', 'true');
+        }
+
+        this.seatsGrid.appendChild(seat);
+      }
+    },
+
+    onSeatClick(event) {
+      const seatDiv = event.target.closest('.seat');
+      if (!seatDiv || seatDiv.classList.contains('booked')) return;
+
+      const seatNum = parseInt(seatDiv.textContent);
+      const idx = this.system.selectedSeats.indexOf(seatNum);
+      if (idx > -1) {
+        this.system.selectedSeats.splice(idx, 1);
+      } else {
+        this.system.selectedSeats.push(seatNum);
+      }
+      this.renderSeats();
+    },
+
+    clearSeatSelection() {
+      this.system.selectedSeats = [];
+    },
+
+    onBookingSubmit(event) {
+      event.preventDefault();
+      const customerName = this.customerNameInput.value.trim();
+      if (!customerName) {
+        alert('Please enter your name.');
+        this.customerNameInput.focus();
+        return;
+      }
+      if (this.system.selectedSeats.length === 0) {
+        alert('Please select at least one seat.');
+        return;
+      }
+      if(!this.system.currentShow) {
+        alert('Please select a show.');
+        return;
+      }
+      const booking = this.system.addBooking(customerName);
+      if (booking) {
+        alert('Booking successful! You can view your bookings.');
+        this.showView('bookings');
+        this.renderMovies();
+      } else {
+        alert('Booking failed. Please try again.');
+      }
+    },
+
+    renderBookingsView() {
+      this.bookingSummaryList.innerHTML = '';
+      if (this.system.bookings.length === 0) {
+        this.bookingSummaryList.innerHTML = '<p>No bookings made yet.</p>';
+        return;
+      }
+      this.system.bookings.forEach(booking => {
+        const div = document.createElement('div');
+        div.id = `booking-${booking.id}`;
+        div.style.background = '#224173';
+        div.style.borderRadius = '10px';
+        div.style.padding = '15px 20px';
+        div.style.margin = '10px 0';
+        div.style.boxShadow = '0 6px 15px rgba(247, 183, 51, 0.5)';
+        div.innerHTML = `
+          <h3 style="color:#f7b733; margin-top: 0;">Booking #${booking.id}</h3>
+          <p><strong>Customer:</strong> ${booking.customerName}</p>
+          <p><strong>Movie:</strong> ${booking.show.movie.name}</p>
+          <p><strong>Show Time:</strong> ${booking.show.time}</p>
+          <p><strong>Seat Number:</strong> ${booking.seats.join(', ')}</p>
+        `;
+        this.bookingSummaryList.appendChild(div);
+      });
+    }
+  };
+
+  const system = new BookingSystem();
+
+})();
+</script>
+</body>
+</html>
+
